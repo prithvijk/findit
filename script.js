@@ -1,13 +1,4 @@
-/* =========================================================
-   CampusFind AI – frontend demo logic (vanilla JavaScript)
-   1 Config · 2 Helpers · 3 Storage · 4 Seed data · 5 Matching
-   6 Rendering · 7 Browse · 8 Report form · 9 Details & claims
-   10 Admin · 11 Campus map · 12 Navigation & events · 13 Init
 
-   To move to Firebase later, replace the `Store` object (section 3)
-   and `computeMatch()` (section 5). The rest of the app only talks
-   to those two places.
-   ========================================================= */
 'use strict';
 
 /* ---------- 1. CONFIG ---------- */
