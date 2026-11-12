@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CampusFind AI – Smart Lost &amp; Found for MITE</title>
+  <meta name="description" content="CampusFind AI helps students and staff at Mangalore Institute of Technology and Engineering report, match and recover lost belongings.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ============ NAVIGATION ============ -->
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="#home" class="logo" data-action="nav" data-page="home" aria-label="CampusFind AI home">
+        <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <rect width="32" height="32" rx="9" fill="url(#lg)"/>
+          <defs><linearGradient id="lg" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#2f55e6"/><stop offset="1" stop-color="#7c5cff"/></linearGradient></defs>
+          <circle cx="14" cy="14" r="6" stroke="#fff" stroke-width="2.4"/>
+          <path d="M19 19l5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M14 11.5v5M11.5 14h5" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <span>CampusFind <b>AI</b></span>
+      </a>
+
+      <button class="menu-toggle" data-action="toggle-menu" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-links">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav id="nav-links" class="nav-links" aria-label="Main navigation">
+        <a href="#home" data-action="nav" data-page="home">Home</a>
+        <a href="#browse" data-action="nav" data-page="browse">Browse Items</a>
+        <a href="#matches" data-action="nav" data-page="matches">AI Matching</a>
+        <a href="#map" data-action="nav" data-page="map">Campus Map</a>
+        <a href="#admin" data-action="nav" data-page="admin">Admin Dashboard</a>
+        <button class="btn btn-primary btn-sm nav-cta" data-action="report" data-mode="lost">Report an Item</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ============ HOME ============ -->
+    <section id="page-home" class="page">
+      <div class="hero">
+        <div class="container hero-inner">
+          <div class="hero-text">
+            <span class="eyebrow">Smart Lost &amp; Found · MITE, Moodabidri</span>
+            <h1>Lost Something on Campus? Let's Find It.</h1>
+            <p>CampusFind AI brings every lost and found report at MITE into one place. Report an item in under a minute, get smart match suggestions, and recover your belongings faster.</p>
+            <div class="hero-actions">
+              <button class="btn btn-light btn-lg" data-action="report" data-mode="lost">Report Lost Item</button>
+              <button class="btn btn-ghost-light btn-lg" data-action="nav" data-page="browse">Browse Found Items</button>
+            </div>
+          </div>
+
+          <!-- Illustration: AI linking a lost item to a found item -->
+          <div class="hero-visual" aria-hidden="true">
+            <div class="vis-card vis-lost">
+              <span class="badge badge-lost">Lost</span>
+              <div class="vis-icon">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M2 20h20"/></svg>
+              </div>
+              <strong>Laptop Charger</strong>
+              <small>Library · 2 days ago</small>
+            </div>
+            <div class="vis-link">
+              <div class="vis-ring"><span>92%</span></div>
+              <small>AI match</small>
+            </div>
+            <div class="vis-card vis-found">
+              <span class="badge badge-found">Found</span>
+              <div class="vis-icon">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M2 20h20"/></svg>
+              </div>
+              <strong>HP Adapter</strong>
+              <small>Library · 1 day ago</small>
+            </div>
+            <span class="vis-note">Illustration</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <!-- Stats -->
+        <div class="stats-grid stats-overlap" id="home-stats" aria-live="polite">
+          <div class="stat-card"><span class="stat-label">Total Reports</span><strong class="stat-value" data-stat="total">0</strong><small>Lost + found</small></div>
+          <div class="stat-card"><span class="stat-label">Items Found</span><strong class="stat-value" data-stat="found">0</strong><small>Waiting for owners</small></div>
+          <div class="stat-card"><span class="stat-label">Items Returned</span><strong class="stat-value" data-stat="returned">0</strong><small>Back with owners</small></div>
+          <div class="stat-card"><span class="stat-label">Successful Matches</span><strong class="stat-value" data-stat="matches">0</strong><small>High-confidence suggestions</small></div>
+        </div>
+
+        <!-- How it works -->
+        <section class="section">
+          <div class="section-head center">
+            <h2>How CampusFind AI works</h2>
+            <p>Three simple steps from "where is it?" to "got it back".</p>
+          </div>
+          <div class="steps-grid">
+            <div class="step"><span class="step-num">1</span><h3>Report</h3><p>Describe the item you lost, or the one you found, with a photo, place and date.</p></div>
+            <div class="step"><span class="step-num">2</span><h3>Match</h3><p>Our demo matcher compares keywords, category, location and date to suggest likely pairs.</p></div>
+            <div class="step"><span class="step-num">3</span><h3>Recover</h3><p>Claim the item, get approved by the admin, and pick it up from its holding location.</p></div>
+          </div>
+        </section>
+
+        <!-- Recent reports -->
+        <section class="section">
+          <div class="section-head row">
+            <div>
+              <h2>Recent Reports</h2>
+              <p>The latest lost and found items across campus.</p>
+            </div>
+            <button class="btn btn-outline" data-action="nav" data-page="browse">View all items</button>
+          </div>
+          <div class="grid" id="recent-grid"></div>
+        </section>
+
+        <!-- Matches preview -->
+        <section class="section">
+          <div class="section-head row">
+            <div>
+              <h2>Latest AI Match Suggestions</h2>
+              <p>Possible lost–found pairs found by the demo matcher.</p>
+            </div>
+            <button class="btn btn-outline" data-action="nav" data-page="matches">See all matches</button>
+          </div>
+          <div id="home-matches" class="match-list"></div>
+        </section>
+      </div>
+    </section>
+
+    <!-- ============ BROWSE ============ -->
+    <section id="page-browse" class="page" hidden>
+      <div class="container">
+        <div class="page-head row">
+          <div>
+            <h1>Browse Items</h1>
+            <p>Search every lost and found report on campus.</p>
+          </div>
+          <button class="btn btn-outline" data-action="my-claims">Check my claim status</button>
+        </div>
+
+        <div class="filters card">
+          <div class="field grow">
+            <label for="flt-search">Search</label>
+            <input id="flt-search" type="search" placeholder="Search by name, description, place…" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="flt-type">Report type</label>
+            <select id="flt-type">
+              <option value="all">All</option>
+              <option value="lost">Lost</option>
+              <option value="found">Found</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="flt-category">Category</label>
+            <select id="flt-category"></select>
+          </div>
+          <div class="field">
+            <label for="flt-location">Location</label>
+            <select id="flt-location"></select>
+          </div>
+          <div class="field">
+            <label for="flt-date">Date</label>
+            <select id="flt-date">
+              <option value="all">Any time</option>
+              <option value="today">Today</option>
+              <option value="week">Last 7 days</option>
+              <option value="month">Last 30 days</option>
+            </select>
+          </div>
+          <button class="btn btn-ghost" data-action="clear-filters">Clear</button>
+        </div>
+
+        <p class="result-count" id="browse-count" aria-live="polite"></p>
+        <div class="grid" id="browse-grid"></div>
+        <div class="empty-state" id="browse-empty" hidden>
+          <div class="empty-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M8 11h6"/></svg>
+          </div>
+          <h3>No matching items</h3>
+          <p>Try a different keyword or clear the filters. You can also report the item so it can be matched later.</p>
+          <div class="btn-row">
+            <button class="btn btn-outline" data-action="clear-filters">Clear filters</button>
+            <button class="btn btn-primary" data-action="report" data-mode="lost">Report an item</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ REPORT ============ -->
+    <section id="page-report" class="page" hidden>
+      <div class="container narrow">
+        <div class="page-head">
+          <h1>Report an Item</h1>
+          <p>Fill in as many details as you can. Good descriptions make better matches.</p>
+        </div>
+
+        <div class="card form-card" id="report-card">
+          <div class="segmented" role="tablist" aria-label="Report type">
+            <button type="button" role="tab" id="tab-lost" class="seg active" data-action="set-mode" data-mode="lost" aria-selected="true">I lost something</button>
+            <button type="button" role="tab" id="tab-found" class="seg" data-action="set-mode" data-mode="found" aria-selected="false">I found something</button>
+          </div>
+
+          <form id="report-form" novalidate>
+            <div class="form-grid">
+              <div class="field">
+                <label for="f-itemName">Item name <span class="req">*</span></label>
+                <input id="f-itemName" name="itemName" type="text" maxlength="80" placeholder="e.g. Black HP laptop charger">
+                <small class="error" data-error-for="itemName"></small>
+              </div>
+              <div class="field">
+                <label for="f-category">Category <span class="req">*</span></label>
+                <select id="f-category" name="category"></select>
+                <small class="error" data-error-for="category"></small>
+              </div>
+              <div class="field full">
+                <label for="f-description">Description <span class="req">*</span></label>
+                <textarea id="f-description" name="description" rows="3" maxlength="400" placeholder="Colour, brand, size, marks, what is inside…"></textarea>
+                <small class="error" data-error-for="description"></small>
+              </div>
+              <div class="field">
+                <label for="f-location" id="label-location">Last seen location <span class="req">*</span></label>
+                <select id="f-location" name="location"></select>
+                <small class="error" data-error-for="location"></small>
+              </div>
+              <div class="field">
+                <label for="f-date" id="label-date">Date lost <span class="req">*</span></label>
+                <input id="f-date" name="date" type="date">
+                <small class="error" data-error-for="date"></small>
+              </div>
+              <div class="field full" id="holding-field" hidden>
+                <label for="f-holding">Current holding location <span class="req">*</span></label>
+                <input id="f-holding" name="holding" type="text" maxlength="80" placeholder="e.g. Library help desk, or &quot;With me&quot;">
+                <small class="error" data-error-for="holding"></small>
+              </div>
+              <div class="field full">
+                <label for="f-photo">Item photograph <span class="opt">(optional, JPG/PNG up to 5 MB)</span></label>
+                <input id="f-photo" name="photo" type="file" accept="image/*">
+                <small class="error" data-error-for="photo"></small>
+                <div class="photo-preview" id="photo-preview" hidden>
+                  <img id="photo-preview-img" alt="Preview of the selected item photo">
+                  <button type="button" class="btn btn-ghost btn-sm" data-action="remove-photo">Remove photo</button>
+                </div>
+              </div>
+              <div class="field">
+                <label for="f-student">Your name <span class="req">*</span></label>
+                <input id="f-student" name="student" type="text" maxlength="60" placeholder="Full name" autocomplete="name">
+                <small class="error" data-error-for="student"></small>
+              </div>
+              <div class="field">
+                <label for="f-email">Email address <span class="req">*</span></label>
+                <input id="f-email" name="email" type="email" maxlength="100" placeholder="you@example.com" autocomplete="email">
+                <small class="error" data-error-for="email"></small>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary btn-lg" id="report-submit">
+                <span class="btn-label">Submit Lost Report</span><span class="spinner" aria-hidden="true"></span>
+              </button>
+              <button type="button" class="btn btn-ghost" data-action="clear-report-form">Clear form</button>
+            </div>
+          </form>
+
+          <div id="report-success" class="success-panel" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ AI MATCHING ============ -->
+    <section id="page-matches" class="page" hidden>
+      <div class="container">
+        <div class="page-head row">
+          <div>
+            <h1>AI Smart Matching</h1>
+            <p>Possible matches between lost and found reports, ranked by score.</p>
+          </div>
+          <div class="btn-row">
+            <div class="field inline">
+              <label for="match-min">Minimum score</label>
+              <select id="match-min">
+                <option value="40">40% and above</option>
+                <option value="60">60% and above</option>
+                <option value="80">80% and above</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" id="rerun-matching" data-action="rerun-matching">
+              <span class="btn-label">Re-run matching</span><span class="spinner" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="notice notice-info">
+          <strong>Frontend demo.</strong> These matches come from a simple JavaScript algorithm that compares keywords, category, location and dates. No AI model or image-recognition service is connected. The matcher is isolated in <code>computeMatch()</code> so it can later be replaced by a real AI service.
+        </div>
+
+        <div id="match-list" class="match-list"></div>
+        <div class="empty-state" id="match-empty" hidden>
+          <div class="empty-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.6L18.5 9l-4.7 1.4L12 15l-1.8-4.6L5.5 9l4.7-1.4z"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>
+          </div>
+          <h3>No matches yet</h3>
+          <p>No lost and found reports look alike at this score. Lower the minimum score or submit more reports.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CAMPUS MAP ============ -->
+    <section id="page-map" class="page" hidden>
+      <div class="container">
+        <div class="page-head">
+          <h1>MITE Campus Map</h1>
+          <p>Find campus locations and see how many items are reported near each one.</p>
+        </div>
+
+        <div class="segmented wide-seg" role="tablist" aria-label="Map view">
+          <button type="button" role="tab" id="maptab-directory" class="seg active" data-action="map-tab" data-tab="directory" aria-selected="true">Building Directory</button>
+          <button type="button" role="tab" id="maptab-map" class="seg" data-action="map-tab" data-tab="map" aria-selected="false">Geographical Map</button>
+        </div>
+
+        <!-- Directory view -->
+        <div id="map-directory" class="map-layout">
+          <div class="card directory">
+            <div class="field">
+              <label for="dir-search">Search locations</label>
+              <input id="dir-search" type="search" placeholder="Library, canteen, hostel…" autocomplete="off">
+            </div>
+            <ul class="dir-list" id="dir-list"></ul>
+            <p class="empty-inline" id="dir-empty" hidden>No campus location matches your search.</p>
+          </div>
+          <div class="card building-detail" id="building-detail" aria-live="polite"></div>
+        </div>
+
+        <!-- Google Map view -->
+        <div id="map-google" hidden>
+          <div class="card map-card">
+            <div id="map-canvas" class="map-canvas" aria-label="Map of the MITE campus area"></div>
+            <p class="map-note" id="map-note"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ADMIN ============ -->
+    <section id="page-admin" class="page" hidden>
+      <div class="container">
+        <div class="page-head row">
+          <div>
+            <h1>Admin Dashboard</h1>
+            <p>Manage reports and claims.</p>
+          </div>
+          <button class="btn btn-outline" data-action="reset-data">Reset demo data</button>
+        </div>
+
+        <div class="notice notice-warn">
+          <strong>Demo admin interface.</strong> There is no login here and anyone can open this page. This is not secure production authentication. A real deployment needs proper sign-in and server-side checks.
+        </div>
+
+        <div class="stats-grid" id="admin-stats">
+          <div class="stat-card"><span class="stat-label">Total Lost Reports</span><strong class="stat-value" data-stat="a-lost">0</strong></div>
+          <div class="stat-card"><span class="stat-label">Total Found Reports</span><strong class="stat-value" data-stat="a-found">0</strong></div>
+          <div class="stat-card"><span class="stat-label">Pending Claims</span><strong class="stat-value" data-stat="a-pending">0</strong></div>
+          <div class="stat-card"><span class="stat-label">Returned Items</span><strong class="stat-value" data-stat="a-returned">0</strong></div>
+        </div>
+
+        <h2 class="table-title">Reports</h2>
+        <div class="card table-wrap">
+          <table class="table">
+            <thead><tr><th>Item</th><th>Type</th><th>Reporter</th><th>Location</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="admin-reports"></tbody>
+          </table>
+        </div>
+
+        <h2 class="table-title">Claims</h2>
+        <div class="card table-wrap">
+          <table class="table">
+            <thead><tr><th>Item</th><th>Claimant</th><th>Identifying details</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="admin-claims"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span><b>CampusFind AI</b> · Smart Lost &amp; Found for MITE, Moodabidri</span>
+      <span>Student demo project, not an official MITE product · Data is stored only in this browser.</span>
+    </div>
+  </footer>
+
+  <!-- Modal -->
+  <div id="modal" class="modal" hidden>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title-anchor">
+      <button class="modal-close" data-action="close-modal" aria-label="Close dialog">&times;</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Toasts -->
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="script.js"></script>
+</body>
+</html>
