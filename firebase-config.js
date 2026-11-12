@@ -1,10 +1,10 @@
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyBtHrI_bP2HMcOXCIOpNc-V4F6PBM053jc",
+    authDomain: "findit-ab909.firebaseapp.com",
+    projectId: "findit-ab909",
+    storageBucket: "findit-ab909.firebasestorage.app",
+    messagingSenderId: "630526620525",
+    appId: "findit-ab909"
 };
 
 firebase.initializeApp(firebaseConfig);
