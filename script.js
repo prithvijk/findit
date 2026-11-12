@@ -1203,3 +1203,55 @@ function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+// Handle Login & Registration with Firebase Auth
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('loginForm');
+    const registerBtn = document.getElementById('registerBtn');
+    
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const messageEl = document.getElementById('message');
+            
+            if (messageEl) messageEl.textContent = "";
+
+            if (!email.endsWith('@mite.ac.in')) {
+                if (messageEl) messageEl.textContent = "Please use your official @mite.ac.in email address.";
+                return;
+            }
+
+            try {
+                await firebase.auth().signInWithEmailAndPassword(email, password);
+                toast('Logged in successfully!', 'success');
+                navigate('home');
+            } catch (error) {
+                if (messageEl) messageEl.textContent = error.message;
+            }
+        });
+    }
+
+    if (registerBtn) {
+        registerBtn.addEventListener('click', async () => {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const messageEl = document.getElementById('message');
+            
+            if (messageEl) messageEl.textContent = "";
+
+            if (!email.endsWith('@mite.ac.in')) {
+                if (messageEl) messageEl.textContent = "Registration requires an @mite.ac.in email.";
+                return;
+            }
+
+            try {
+                await firebase.auth().createUserWithEmailAndPassword(email, password);
+                toast('Account created successfully!', 'success');
+                navigate('home');
+            } catch (error) {
+                if (messageEl) messageEl.textContent = error.message;
+            }
+        });
+    }
+});
