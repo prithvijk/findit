@@ -133,13 +133,19 @@ const Store = {
     
     async load() {
         try {
-            // Fetch items from Firestore 'items' collection
-            const querySnapshot = await getDocs(collection(db, "items"));
-            this.items = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            // Fetch documents from your Firestore collection
+            const querySnapshot = await db.collection("users").get();
             
-            // If empty, you can fall back to seeding your initial data once
+            this.items = querySnapshot.docs.map(doc => ({ 
+                id: doc.id, 
+                ...doc.data() 
+            }));
+            
+            console.log("Loaded data successfully:", this.items);
+            
+            // If empty, you can seed data if you have a seed function
             if (this.items.length === 0) {
-                await seedInitialDataToFirestore();
+                // await seedInitialDataToFirestore();
             }
         } catch (error) {
             console.error("Error loading data from Firebase:", error);
