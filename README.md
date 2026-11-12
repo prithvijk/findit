@@ -8,7 +8,7 @@
 | `style.css` | Styles |
 | `script.js` | UI logic: renders live data, forms, matching, admin, map |
 | `firebase.js` | The only file that talks to Firebase (Auth + Firestore) |
-| `firebase-config.js` | **You paste your Firebase web config here** |
+| `firebase-config.js` | ASzaSy... |
 | `firestore.rules` | Security rules (publish these!) |
 | `firebase.json` | Firebase CLI config (rules + hosting) |
 
