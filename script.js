@@ -128,28 +128,46 @@ const state = {
 };
 
 const Store = {
-  read(key, fallback) {
-    try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
-    catch (e) { return fallback; }
-  },
-  write(key, value) {
-    try { localStorage.setItem(key, JSON.stringify(value)); return true; }
-    catch (e) { return false; }
-  },
-  load() {
-    const reports = this.read(KEYS.reports, null);
-    const claims = this.read(KEYS.claims, null);
-    if (Array.isArray(reports) && Array.isArray(claims)) {
-      state.reports = reports; state.claims = claims;
-    } else {
-      seedDemoData();
+    items: [],
+    claims: [],
+    
+    async load() {
+        try {
+            // Fetch items from Firestore 'items' collection
+            const querySnapshot = await getDocs(collection(db, "items"));
+            this.items = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            
+            // If empty, you can fall back to seeding your initial data once
+            if (this.items.length === 0) {
+                await seedInitialDataToFirestore();
+            }
+        } catch (error) {
+            console.error("Error loading data from Firebase:", error);
+        }
+    },
+
+    async saveItem(newItem) {
+        try {
+            const docRef = await addDoc(collection(db, "items"), newItem);
+            newItem.id = docRef.id;
+            this.items.push(newItem);
+            renderAll();
+        } catch (error) {
+            console.error("Error saving item:", error);
+        }
+    },
+
+    async updateItemStatus(id, newStatus) {
+        try {
+            const itemRef = doc(db, "items", id);
+            await updateDoc(itemRef, { status: newStatus });
+            const item = this.items.find(i => i.id === id);
+            if (item) item.status = newStatus;
+            renderAll();
+        } catch (error) {
+            console.error("Error updating status:", error);
+        }
     }
-  },
-  save() {
-    const ok = this.write(KEYS.reports, state.reports) && this.write(KEYS.claims, state.claims);
-    if (!ok) toast('Could not save to browser storage. It may be full or disabled.', 'error');
-    return ok;
-  }
 };
 
 /* ---------- 4. SEED DATA ---------- */
@@ -972,7 +990,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const auth = getFirestore(app);
 
 const loginForm = document.getElementById('loginForm');
 if (loginForm) {
