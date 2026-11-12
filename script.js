@@ -14,7 +14,7 @@ const MAP_TILES = {
 };
 
 const KEYS = { reports: 'campusfind_reports_v1', claims: 'campusfind_claims_v1' };
-const PAGES = ['home', 'browse', 'report', 'matches', 'map', 'admin'];
+const PAGES = ['home', 'browse', 'report', 'matches', 'map', 'admin','login'];
 
 // Icon paths use a 24x24 grid. They are reused for placeholder item images.
 const CATEGORIES = [
