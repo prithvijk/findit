@@ -962,13 +962,9 @@ function initMap() {
   // The map was hidden when created, so Leaflet needs to re-measure its size.
   setTimeout(() => state.map.invalidateSize(), 0);
 }
-import { initializeApp } from "firebase/app";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
-  getAuth, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword,
-  sendEmailVerification 
-} from "firebase/auth";
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 // Your Firebase configuration (using your project context credentials)
 const firebaseConfig = {
@@ -984,36 +980,54 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Get DOM Elements
-const loginForm = document.getElementById("loginForm");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const messageEl = document.getElementById("message");
-const registerBtn = document.getElementById("registerBtn");
+const loginForm = document.getElementById('loginForm');
+if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const messageEl = document.getElementById('message');
+        
+        messageEl.textContent = "";
 
-// Helper to validate the college domain
-const isCollegeEmail = (email) => email.endsWith("@mite.ac.in");
+        if (!email.endsWith('@mite.ac.in')) {
+            messageEl.textContent = "Please use your official @mite.ac.in email address.";
+            return;
+        }
 
-// 1. Handle Registration
-registerBtn.addEventListener("click", async () => {
-  const email = emailInput.value;
-  const password = passwordInput.value;
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            toast('Logged in successfully!', 'success');
+            navigate('home');
+        } catch (error) {
+            messageEl.textContent = error.message;
+        }
+    });
+}
 
-  if (!isCollegeEmail(email)) {
-    messageEl.style.color = "red";
-    messageEl.textContent = "Registration is restricted to @mite.ac.in emails.";
-    return;
-  }
+const registerBtn = document.getElementById('registerBtn');
+if (registerBtn) {
+    registerBtn.addEventListener('click', async () => {
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const messageEl = document.getElementById('message');
+        
+        messageEl.textContent = "";
 
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    // Force email verification to prevent fake student registrations
-    await sendEmailVerification(userCredential.user);
-    messageEl.style.color = "green";
-    messageEl.textContent = "Registration successful! Check your MITE email for verification.";
-  } catch (error) {
-    messageEl.style.color = "red";
-    messageEl.textContent = error.message;
+        if (!email.endsWith('@mite.ac.in')) {
+            messageEl.textContent = "Registration requires an @mite.ac.in email.";
+            return;
+        }
+
+        try {
+            await createUserWithEmailAndPassword(auth, email, password);
+            toast('Account created successfully!', 'success');
+            navigate('home');
+        } catch (error) {
+            messageEl.textContent = error.message;
+        }
+    });
+}
   }
 });
 
