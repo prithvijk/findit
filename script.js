@@ -131,27 +131,21 @@ const Store = {
     items: [],
     claims: [],
     
-    async load() {
-        try {
-            // Fetch documents from your Firestore collection
-            const querySnapshot = await db.collection("users").get();
-            
-            this.items = querySnapshot.docs.map(doc => ({ 
-                id: doc.id, 
-                ...doc.data() 
-            }));
-            
-            console.log("Loaded data successfully:", this.items);
-            
-            // If empty, you can seed data if you have a seed function
-            if (this.items.length === 0) {
-                // await seedInitialDataToFirestore();
-            }
-        } catch (error) {
-            console.error("Error loading data from Firebase:", error);
-        }
-    },
+   async function loadUserData() {
+    try {
+        const querySnapshot = await db.collection("users").get();
+        
+        console.log("Total documents found:", querySnapshot.size);
+        
+        querySnapshot.forEach((doc) => {
+            console.log("Document ID:", doc.id, "Data:", doc.data());
+        });
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+    }
+}
 
+loadUserData();
     async saveItem(newItem) {
         try {
             const docRef = await addDoc(collection(db, "items"), newItem);
