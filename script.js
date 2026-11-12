@@ -962,6 +962,88 @@ function initMap() {
   // The map was hidden when created, so Leaflet needs to re-measure its size.
   setTimeout(() => state.map.invalidateSize(), 0);
 }
+import { initializeApp } from "firebase/app";
+import { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
+  sendEmailVerification 
+} from "firebase/auth";
+
+// Your Firebase configuration (using your project context credentials)
+const firebaseConfig = {
+  apiKey: "AIzaSyBtHrI_bP2HMcOXCIOpNc-V4F6PBM053jc", // Get this from your Firebase Project Settings
+  authDomain: "findit-ab909.firebaseapp.com",
+  projectId: "findit-ab909",
+  storageBucket: "findit-ab909.firebasestorage.app",
+  messagingSenderId: "630526620525",
+  appId: "findit-ab909" // Get this from your Firebase Project Settings
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// Get DOM Elements
+const loginForm = document.getElementById("loginForm");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const messageEl = document.getElementById("message");
+const registerBtn = document.getElementById("registerBtn");
+
+// Helper to validate the college domain
+const isCollegeEmail = (email) => email.endsWith("@mite.ac.in");
+
+// 1. Handle Registration
+registerBtn.addEventListener("click", async () => {
+  const email = emailInput.value;
+  const password = passwordInput.value;
+
+  if (!isCollegeEmail(email)) {
+    messageEl.style.color = "red";
+    messageEl.textContent = "Registration is restricted to @mite.ac.in emails.";
+    return;
+  }
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    // Force email verification to prevent fake student registrations
+    await sendEmailVerification(userCredential.user);
+    messageEl.style.color = "green";
+    messageEl.textContent = "Registration successful! Check your MITE email for verification.";
+  } catch (error) {
+    messageEl.style.color = "red";
+    messageEl.textContent = error.message;
+  }
+});
+
+// 2. Handle Login
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = emailInput.value;
+  const password = passwordInput.value;
+
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // Check if the student verified their inbox
+    if (!user.emailVerified) {
+      messageEl.style.color = "red";
+      messageEl.textContent = "Please verify your email before logging in.";
+      return;
+    }
+
+    messageEl.style.color = "green";
+    messageEl.textContent = "Login successful! Redirecting...";
+    
+    // Redirect to dashboard page
+    // window.location.href = "dashboard.html";
+  } catch (error) {
+    messageEl.style.color = "red";
+    messageEl.textContent = error.message;
+  }
+});
 
 /* ---------- 12. NAVIGATION & EVENTS ---------- */
 
