@@ -271,17 +271,20 @@ const findReport = id => state.reports.find(r => r.id === id);
 const canClaim = r => r.type === 'found' && (r.status === 'Open' || r.status === 'Claim Pending');
 
 function animateNumber(el, to) {
-  const from = Number(el.dataset.value || 0);
-  el.dataset.value = to;
-  if (from === to || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = to; return; }
-  const start = performance.now();
-  const duration = 600;
-  function tick(now) {
-    const p = Math.min(1, (now - start) / duration);
-    el.textContent = Math.round(from + (to - from) * p);
-    if (p < 1) requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
+    const from = Number(el.dataset.value || 0);
+    el.dataset.value = to;
+    if (from === to || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        el.textContent = to;
+        return;
+    }
+    const start = performance.now();
+    const duration = 600;
+    function tick(now) {
+        const p = Math.min(1, (now - start) / duration);
+        el.textContent = Math.round(from + (to - from) * p);
+        if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
 }
 
 function renderStats() {
